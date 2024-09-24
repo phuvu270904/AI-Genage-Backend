@@ -6,7 +6,7 @@ dotenv.config();
 const router = express.Router();
 
 router.route('/').get((req, res) => {
-    res.send("Hello from Auth AI-Genage");
+    res.send("Hello from Authorization route");
 })
 
 export default router;
