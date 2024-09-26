@@ -10,10 +10,6 @@ dotenv.config();
 
 const router = express.Router();
 
-router.route('/').get((req, res) => {
-    res.send("Hello from Authorization route");
-});
-
 router.route('/register').post(async (req, res) => {
     const username = req.body.username.toLowerCase();
 	const user = await User.findOne({ username });
