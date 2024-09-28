@@ -77,4 +77,53 @@ router.route('/login').post(async (req, res) => {
 	});
 });
 
+router.route('/refresh').post(async (req, res) => {
+	const accessTokenFromHeader = req.headers.x_authorization;
+	if (!accessTokenFromHeader) {
+		return res.status(400).send('Cannot find access token.');
+	}
+
+	const refreshTokenFromBody = req.body.refreshToken;
+	if (!refreshTokenFromBody) {
+		return res.status(400).send('Cannot find refresh token.');
+	}
+
+	const accessTokenSecret =
+		process.env.ACCESS_TOKEN_SECRET || jwtVariable.accessTokenSecret;
+	const accessTokenLife =
+		process.env.ACCESS_TOKEN_LIFE || jwtVariable.accessTokenLife;
+
+	const decoded = await jwt.verify(accessTokenFromHeader, accessTokenSecret, { ignoreExpiration: true });
+
+	if (!decoded) {
+		return res.status(400).send('Access token is invalid.');
+	}
+
+	const username = decoded.username;
+
+	const user = await User.findOne({username});
+	if (!user) {
+		return res.status(401).send('User not found');
+	}
+
+	if (refreshTokenFromBody !== user.refreshToken) {
+		return res.status(400).send('Invalid refresh token');
+	}
+
+	const dataForAccessToken = {
+		username
+	};
+
+	const accessToken = jwt.sign(dataForAccessToken, accessTokenSecret, { expiresIn: accessTokenLife });
+
+	if (!accessToken) {
+		return res
+			.status(400)
+			.send('Error creating access token');
+	}
+	return res.json({
+		accessToken,
+	});
+});
+
 export default router;
