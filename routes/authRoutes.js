@@ -126,4 +126,21 @@ router.route('/refresh').post(async (req, res) => {
 	});
 });
 
+router.route('/verify').post(async (req, res) => {
+	const accessTokenFromHeader = req.headers.x_authorization;
+	if (!accessTokenFromHeader) {
+		return res.status(400).send('Cannot find access token.');
+	}
+
+	const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+
+	await jwt.verify(accessTokenFromHeader, accessTokenSecret, (err, decoded) => {
+		if (err) {
+			return res.status(400).send('Access token is invalid.');
+		} else {
+			return res.status(200).send(decoded);
+		}
+	});
+});
+
 export default router;
