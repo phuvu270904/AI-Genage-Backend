@@ -12,10 +12,10 @@ router.route('/').get((req, res) => {
 router.route('/').post(async (req, res) => {
     try {
         const response = await fetch(
-            "https://api-inference.huggingface.co/models/ZB-Tech/Text-to-Image",
+            `https://api.cloudflare.com/client/v4/accounts/${process.env.CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/bytedance/stable-diffusion-xl-lightning`,
             {
                 headers: {
-                    "Authorization": `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+                    "Authorization": `Bearer ${process.env.CLOUDFLARE_API_KEY}`,
                     "Content-Type": "application/json",
                 },
                 method: "POST",
